@@ -26,12 +26,12 @@ var trayItemTemplate="<span class='item-name'>{{title}}</span><span class='item-
 var orderTemplate="<span class='button order {{css}}'><span class='order-text'>{{text}}</span><br/><small>{{items}} item{{s}} for <span class='tray-price'>{{price}}</span>€</small> </span>";
 
 var bartabTemplate="<span class='user-name'>Hi, {{username}}! Your bar tab is:</span><span class='bar-tab'><span>{{price}}€</span></span>";
-var headerTemplate="<span class='categories'></span>{{^user}}<span class='locked button'>Login</span>{{/user}}<span class='help button'>Help</span>{{#user}}<span class='exit button'>Exit</span>{{/user}}";
+var headerTemplate="<span class='categories'></span>{{#user}}<span class='exit button'>Exit</span><span class='button username exit'>{{username}}</span>{{/user}}";
 
 
 var consumptionTemplate="<span class='consumption-title'>{{title}}</span><span class='consumption-count'>({{count}})</span><span class='consumption-sum'></span> for {{price}}<span class='consumption-items'></span>";	
 	
-var lockTemplate="<div type='text' class='pin-input'></div><span class='num-key'>1</span><span class='num-key'>2</span><span class='num-key'>3</span><span class='num-key'>4</span><span class='num-key'>5</span><span class='num-key'>6</span><span class='num-key'>7</span><span class='num-key'>8</span><span class='num-key'>9</span><span class='num-key'>0</span><span class='button clear-key'>clear</span><span class='button enter-key'>enter</span><div class='clear'></div>"
+var lockTemplate="<div type='password' class='pin-input-hidden hidden'></div><div type='password' class='pin-input'></div><span class='num-key'>1</span><span class='num-key'>2</span><span class='num-key'>3</span><span class='num-key'>4</span><span class='num-key'>5</span><span class='num-key'>6</span><span class='num-key'>7</span><span class='num-key'>8</span><span class='num-key'>9</span><span class='num-key'>0</span><span class='button clear-key'>clear</span><span class='button enter-key'>enter</span><div class='clear'></div>"
 
 /* 
 add the templates to iCanHaz
@@ -158,7 +158,7 @@ var TrayView = Backbone.View.extend({
 		deductes its price from the total sum
 	*/
 	removeItem:function(item){
-		for(i=0,n=this.items.length;i<n;i++){
+		for(var i=0,n=this.items.length;i<n;i++){
 			if(this.items[i]==item){
 				this.price-=item.get("price")*1
 				this.items.splice(i,1);
@@ -567,7 +567,7 @@ var HeaderView = Backbone.View.extend({
 	},
 	/* renders the menu buttons and the categorie buttons */
 	render:function(){
-		$(this.el).html(ich.header({user:app.user}));
+		$(this.el).html(ich.header({user:app.user, username: app.user?app.user.get('username') : "" }));
 		if(app.user){
 		var self=this
 		_(app.categoryCollection.models).each(function(category){
@@ -633,17 +633,27 @@ var LockView = Backbone.View.extend({
 	keyInput:function(event){
 		
 		var key=$(event.currentTarget).html();
-		var pin=$('.pin-input',this.el).html();
+		var pin=$('.pin-input-hidden',this.el).html();
 		if(pin==this.defaultVal){pin="";}
-		$('.pin-input',this.el).html(pin=pin+key)
-		if(pin.length==4){
-			this.enterPin(pin)
+		$('.pin-input-hidden',this.el).html(pin=pin+key);
+		var showPin = "";
+		for (var i=0;i<pin.length-1;i++) {
+			showPin +="*";
+		}
+		showPin +=key;
+		$('.pin-input',this.el).html(showPin);
+		if(pin.length>=4){
+			this.enterPin(pin);
+			$('.pin-input',this.el).html(this.defaultVal);
+			$('.pin-input-hidden',this.el).html('');
+
 		}
 		event.preventDefault();
 	},
 	/* reset the pin input */
 	clear:function(){
 		$('.pin-input',this.el).html(this.defaultVal)
+		$('.pin-input-hidden',this.el).html('');
 	},
 	/* lets the user manually send the pin */
 	enter:function(){

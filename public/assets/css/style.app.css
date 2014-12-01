@@ -31,6 +31,12 @@ width: 100%;
 .header .exit{
 float: right;
 }
+.header .username{
+float: right;
+font-size: 10px;
+padding-left: 0;
+padding-right: 0;
+}
 .lock{
 width: 300px;
 margin:100px auto;
@@ -246,4 +252,8 @@ padding: 10px 20px;
 .credits{
 padding: 10px 20px;
 color: #999;
+}
+
+.hidden {
+	display: none;
 }

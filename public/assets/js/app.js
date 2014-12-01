@@ -26,7 +26,7 @@ var trayItemTemplate="<span class='item-name'>{{title}}</span><span class='item-
 var orderTemplate="<span class='button order {{css}}'><span class='order-text'>{{text}}</span><br/><small>{{items}} item{{s}} for <span class='tray-price'>{{price}}</span>€</small> </span>";
 
 var bartabTemplate="<span class='user-name'>Hi, {{username}}! Your bar tab is:</span><span class='bar-tab'><span>{{price}}€</span></span>";
-var headerTemplate="<span class='categories'></span>{{#user}}<span class='exit button'>Exit</span><span class='button username exit'>{{username}}</span>{{/user}}";
+var headerTemplate="<span class='categories'></span>{{#user}}<span class='button username'>{{username}}</span>{{/user}}";
 
 
 var consumptionTemplate="<span class='consumption-title'>{{title}}</span><span class='consumption-count'>({{count}})</span><span class='consumption-sum'></span> for {{price}}<span class='consumption-items'></span>";	
@@ -86,7 +86,9 @@ var TrayView = Backbone.View.extend({
 	className:"tray",
 	events:{
 		'click .order':'placeOrder',
-		'touchstart .order':'placeOrder'
+		'touchstart .order':'placeOrder',
+		'click .exit':'lock',
+		'touchstart .exit':'lock'
 	},
 	initialize:function(){
 		_.bindAll(this,"render","appendItem","placeOrder","addItem","removeItem",'clear',"orderComplete","updateBarTab","updateOrder")
@@ -122,6 +124,7 @@ var TrayView = Backbone.View.extend({
 			$(this.el).html(ich.bartab({username:app.user.get("username"),price:utils.formatPrice(this.bartab)}));
 		}
 		$(this.el).append("<div class='order-wrapper'></div>")
+		$(this.el).append("<div class='exit'>Exit</div>");
 		this.updateOrder();	
 		
 		_(this.items).each(function(item){
@@ -244,7 +247,16 @@ var TrayView = Backbone.View.extend({
 			this.price=0;
 			this.items=[]
   			this.render();
+	},
+		/* 
+		if the logout button is clickt we lock the app
+		TODO: do this with an event trigger to remove dependencie on mainview
+	 */
+	lock:function(){
+		app.trigger("lock",false)
+	
 	}
+
 })
 
 /* 
@@ -737,7 +749,9 @@ var MainView = Backbone.View.extend({
 		and then unlock the app
 	*/
 	setUser:function(response){
-		if(response.status!=200){return;}
+		if(response.status!=200){
+			$( ".lock" ).effect( "shake" , { "times" : 1 });
+			return;}
 		this.user=new UserModel(response.data.user);
 		app.user=this.user
 		this.setConsumptions(response.data.consumptions)

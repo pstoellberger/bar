@@ -7,7 +7,7 @@ background: #000;
 height: 60px;
 width: 100%;
 }
-.header .button{
+.header .button {
 	display: block;
 	float: left;
 	color: #fff;
@@ -15,9 +15,7 @@ width: 100%;
 	line-height: 60px;
 	vertical-align: middle;
 	padding: 0px 30px;
-	font-family: 'Georgia';
-	font-style: italic;
-	font-weight: bold;
+	font-family: 'Helvetica';
 	-webkit-transition: all 0.5s ease-out;
 }
 .header .button:active{
@@ -28,14 +26,30 @@ width: 100%;
 .header .button.active{
 	color: #fe6a00!important;
 }
-.header .exit{
-float: right;
+.tray .exit{
+cursor: pointer;
+line-height: 60px;
+vertical-align: middle;
+font-family: 'Helvetica';
+position: absolute;
+bottom: 5px;
+right: 0;
+
+z-index: 10;
+border: 1px solid #ccc;
+text-align: center;
+margin-bottom: 10px;
+padding-bottom: 10px;
+width: 100%;
+background-color: #fe6a00;
+color: white;
+
 }
 .header .username{
 float: right;
-font-size: 10px;
+
 padding-left: 0;
-padding-right: 0;
+padding-right: 10;
 }
 .lock{
 width: 300px;

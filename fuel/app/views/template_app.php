@@ -9,8 +9,10 @@
 	 
 	 <?php echo Asset::css('style.css'); ?>
 	 <?php echo Asset::css('style.app.css'); ?>
-	 
-	 <?php echo Asset::js('jquery.min.js'); ?>
+	 <?php echo Asset::js('jquery-1.11.1.min.js'); ?>
+	<?php echo Asset::js('jquery-ui-1.10.4.min.js'); ?>
+
+	 <?php // echo Asset::js('jquery.min.js'); ?>
 	 <?php echo Asset::js('underscore.js'); ?>
 	 <?php echo Asset::js('backbone.js'); ?>
 	 <?php echo Asset::js('iCanHaz-min.js'); ?>

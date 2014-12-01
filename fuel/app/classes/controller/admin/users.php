@@ -5,7 +5,17 @@ class Controller_Admin_Users extends Controller_Admin {
 
 	public function action_index()
 	{
-		$data['users'] = Model_User::find('all',array('order_by' => 'username'));
+		//$data['users'] = Model_User::find('all',array('order_by' => 'username'));
+		$data['users'] = Model_User::find('all',array(
+			'where' => array( array('status','<>',1)),
+			'order_by' => array('last_login' => 'desc')
+		));
+
+		$data['inactiveusers'] = Model_User::find('all',array(
+			'where' => array( array('status',1)),
+			'order_by' => array('last_login' => 'desc')
+		));
+
 		$this->template->title = "Users";
 		$this->template->content = View::factory('users/index', $data);
 

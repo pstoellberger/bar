@@ -31,8 +31,9 @@ class Controller_Admin_Items extends Controller_Admin {
 				'title' => Input::post('title'),
 				'price' => Input::post('price'),
 				'cost' => Input::post('cost'),
+				'event_price' => Input::post('event_price'),
 				'maxusage' => Input::post('maxusage'),
-				'inventory' => Input::post('inventory'),
+				'packing_unit' => Input::post('packing_unit'),
 				'points' => 0,
 				'category_id'=>Input::post('category_id'),
 				'status'=>Input::post('status')
@@ -63,10 +64,11 @@ class Controller_Admin_Items extends Controller_Admin {
 			$item->title = Input::post('title');
 			$item->price = Input::post('price');
 			$item->cost = Input::post('cost');
-			$item->inventory = Input::post('inventory');
+			$item->event_price = Input::post('event_price');
 			$item->maxusage = Input::post('maxusage');
 			$item->category_id=Input::post('category_id');
 			$item->status=Input::post('status');
+			$item->packing_unit=Input::post('packing_unit');
 
 			try{
 				$item->save();

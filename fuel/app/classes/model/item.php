@@ -14,14 +14,19 @@ class Model_Item extends Orm\Model {
             'label' => 'Price',
             'validation' => array('required')
         ),
+        'event_price' => array(
+            'type' => 'float',
+            'label' => 'Event Price',
+            'validation' => array('required')
+        ),
         'cost' => array(
             'type' => 'float',
             'label' => 'Cost',
             'validation' => array('required')
         ),
-        'inventory' => array(
-            'type' => 'float',
-            'label' => 'Cost',
+        'packing_unit' => array(
+            'type' => 'int',
+            'label' => 'Packing Unit',
             'validation' => array('required')
         ),
         'maxusage' => array(

@@ -101,7 +101,7 @@ text-decoration: none!important;
 .item:hover{
 	background: #f9f9f9;
 }
-.item .item-price,.item .item-cost{
+.item .item-price,.item .item-cost, .item-event-price{
 
 	color: #999;
 

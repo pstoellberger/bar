@@ -12,8 +12,12 @@
 <?php echo Form::input('cost', Input::post('cost', isset($item) ? $item->cost : '')); ?>
 	</p>
 	<p>
-		<?php echo Form::label('Inventory', 'inventory'); ?>: 
-<?php echo Form::input('inventory', Input::post('inventory', isset($item) ? $item->inventory : '')); ?>
+		<?php echo Form::label('Event Price', 'event_price'); ?>: 
+<?php echo Form::input('event_price', Input::post('event_price', isset($item) ? $item->event_price : '')); ?>
+	</p>
+	<p>
+		<?php echo Form::label('Packing Unit', 'packing_unit'); ?>: 
+<?php echo Form::input('packing_unit', Input::post('packing_unit', isset($item) ? $item->packing_unit : '')); ?>
 	</p>
 	<p>
 		<?php echo Form::label('Max Usage', 'maxusage'); ?>: 

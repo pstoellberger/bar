@@ -122,8 +122,10 @@ height: 20px;
 vertical-align: middle;
 line-height: 20px;
 right: 10px;
-
 z-index: 1;
+}
+.item:hover .item-activate-btn {
+	right: 30px;
 }
 
 .user.maxed{

@@ -93,6 +93,7 @@ class Controller_Admin_Users extends Controller_Admin {
 				'group' => Input::post('group') || '',
 				'last_login' => Input::post('last_login') || '',
 				'login_hash' => Input::post('login_hash') || '',
+				'is_team'	=> Input::post('is_team') || false,
 			));
 
 			try
@@ -194,6 +195,7 @@ class Controller_Admin_Users extends Controller_Admin {
 			$user->login_hash = Input::post('login_hash');
 
 			$user->status = Input::post("status");
+			$user->is_team = Input::post("is_team");
 
 			try{
                 $user->save();

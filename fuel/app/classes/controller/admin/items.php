@@ -3,8 +3,8 @@ class Controller_Admin_Items extends Controller_Admin {
 	
 	public function action_index()
 	{
-		$categories=Model_Category::find('all',array('order_by'=>'order','related'=>array('items')));
-		$items=Model_Item::find()->where('category_id', 0)->get();
+		$categories=Model_Category::find('all',array('order_by'=>'order','related'=>array('items' => array('order_by' => 'items.title'))));
+		$items=Model_Item::find()->where('category_id', 0)->order_by('category_id', 'asc')->order_by('id', 'asc')->get();
 		
 		$uncategorized=Model_Category::factory(array(
 			'label'=>'uncategorized'
@@ -94,6 +94,41 @@ class Controller_Admin_Items extends Controller_Admin {
 			Session::set_flash('notice', $this->flash_success('Deleted item #' . $id));
 		}else{
 			Session::set_flash('notice', $this->flash_error('Could not delete item #' . $id));
+		}
+		Response::redirect('admin/items');
+	}
+
+	public function action_activate($id = null){
+		if ($item = Model_Item::find($id)){
+			try{
+				$item->status=0;
+				$item->save();
+				Session::set_flash('notice', $this->flash_success('Updated item #' . $id));
+				Response::redirect('admin/items');
+			}
+            catch (Orm\ValidationFailed $e) {
+				Session::set_flash('notice', $this->flash_error('Could not activate item #' . $id));
+			
+			}
+		}else{
+			Session::set_flash('notice', $this->flash_error('Could not activate item #' . $id));
+		}
+		Response::redirect('admin/items');
+	}
+	public function action_deactivate($id = null){
+		if ($item = Model_Item::find($id)){
+			try{
+				$item->status=1;
+				$item->save();
+				Session::set_flash('notice', $this->flash_success('Updated item #' . $id));
+				Response::redirect('admin/items');
+			}
+            catch (Orm\ValidationFailed $e) {
+				Session::set_flash('notice', $this->flash_error('Could not activate item #' . $id));
+			
+			}
+		}else{
+			Session::set_flash('notice', $this->flash_error('Could not activate item #' . $id));
 		}
 		Response::redirect('admin/items');
 	}

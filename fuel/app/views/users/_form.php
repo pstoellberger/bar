@@ -30,6 +30,14 @@
 		echo Form::select('status',$status, array('active','disabled'));
 	 ?>
 	</p>
+		<p>
+		<?php echo Form::label('Team?', 'is_team'); ?>: 
+		<?php 
+		$is_team=false;
+		if(isset($user)){$is_iteam=$user->is_team;}
+			echo Form::checkbox('is_team', '1', array('checked' =>$is_team));
+	 ?>
+	</p>
 <?php echo Form::hidden('profile_fields', ''); ?>
 
 

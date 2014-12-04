@@ -53,6 +53,11 @@ class Model_User extends Orm\Model {
             'label' => 'Status',
             'default' =>''
         ),
+        'is_team' => array(
+            'type' =>'boolean',
+            'label' => 'Is Team',
+            'default' =>false
+        ),
         'profile_fields' => array('type' => 'text', 'label' => 'Profile fields'),
         'last_login' => array('type' => 'int', 'label' => 'Last login'),
         'created_at' => array('type' => 'int', 'label' => 'Created At'),

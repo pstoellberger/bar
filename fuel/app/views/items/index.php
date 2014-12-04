@@ -21,13 +21,20 @@
 		<?php foreach ($items as $item): ?>
 		 	<div class="item">
 				<a href="items/edit/<?php echo $item->id; ?>" class="item-link">
-					<span class="item-label"><?php echo $item->title; ?></span>
+					<span class='item-label <?php if ($item->status == 1) echo "item-price"; ?>'><?php echo $item->title; ?></span>
 					<span class="item-price"><?php echo $item->price; ?>€</span>
 					<span class="item-cost">/ <?php echo $item->cost; ?>€</span>
 					<span class="item-event-price">/ <?php echo $item->event_price; ?>€</span>
 				</a>
 				
-					<?php echo Html::anchor('admin/items/delete/'.$item->id, 'delete', array('class'=>'danger item-delete-btn','onclick' => "return confirm('Are you sure?')")); ?>	
+					<?php 
+		if ($item->status == 0)
+			echo Html::anchor('admin/items/deactivate/'.$item->id, 'deactivate', array('class'=>'item-delete-btn item-activate-btn')); 
+		else
+			echo Html::anchor('admin/items/activate/'.$item->id, 'activate', array('class'=>'item-delete-btn  item-activate-btn')); 
+
+			//echo Html::anchor('admin/items/delete/'.$item->id, 'delete', array('class'=>'danger item-delete-btn','onclick' => "return confirm('Are you sure?')")); 
+				?>	
 					
 				
 				

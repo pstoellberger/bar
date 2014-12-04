@@ -6,8 +6,13 @@ class Controller_Admin_Users extends Controller_Admin {
 	public function action_index()
 	{
 		//$data['users'] = Model_User::find('all',array('order_by' => 'username'));
+		$data['team'] = Model_User::find('all',array(
+			'where' => array( array('status','<>',1), array('is_team', 1)),
+			'order_by' => array('last_login' => 'desc')
+		));
+
 		$data['users'] = Model_User::find('all',array(
-			'where' => array( array('status','<>',1)),
+			'where' => array( array('status','<>',1), array('is_team','<>', 1)),
 			'order_by' => array('last_login' => 'desc')
 		));
 

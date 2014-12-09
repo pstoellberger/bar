@@ -147,6 +147,10 @@ class Controller_Api extends Controller_Rest {
     	$this->response($items->as_array());
     }
 
+    public function get_events() {
+        $items=DB::select()->from('events')->as_object('Model_Event')->where('status','<>',1)->order_by('id', 'desc')->execute();
+    }
+
 
 	/**
 	 * The 404 action for the application.

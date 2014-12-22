@@ -329,7 +329,8 @@ var ItemView = Backbone.View.extend({
 			}
 		var html=ich.item(data);
 		$(this.el).html(html)
-		if(this.model.hasChanged('user_count')){
+		if(this.model.hasChanged('user_count') && this.model.get('user_count') > 0)
+		{
 			$(this.el).addClass('update');
 			var self=this;
 			setTimeout(function(){
@@ -370,18 +371,20 @@ var CategoryView = Backbone.View.extend({
 		$(this.el).html();
 		$(this.el).addClass("category-"+this.model.get("id"));
 		var self=this;
+		var it = [];
 		if (self.model.get("favorit")) {
 			var itemsFiltered = _.sortBy(_.filter( app.itemCollection.models, function(it, items) { return it.get("user_count")>0; }), function(si) { return si.get("user_count") * -1; });
 			_.each(itemsFiltered, function(item) {
-				self.appendItem(item);
+				it.push(item);
 			});
 		} else {
 			_(app.itemCollection.models).each(function(item){
 				if(item.get("category_id")==self.model.get("id")){
-					this.appendItem(item)
+					it.push(item);
 				}
 			},this)
 		}
+		this.appendItems(it);
 		$(this.el).append(app.views.trayview.render().el)
 		return this;
 	},
@@ -391,7 +394,11 @@ var CategoryView = Backbone.View.extend({
 	appendItem:function(item){
 		//console.log("appendItem")
 		$(this.el).append(new ItemView(item).render().el)
-	}
+	},
+
+	appendItems: function(items) {
+        $(this.el).append(_(items).map(function(item) { return new ItemView(item).render().el; }));
+    }
 })
 
 /* 
@@ -751,7 +758,8 @@ var MainView = Backbone.View.extend({
 	setUser:function(response){
 		if(response.status!=200){
 			$( ".lock" ).effect( "shake" , { "times" : 1 });
-			return;}
+			return;
+		}
 		this.user=new UserModel(response.data.user);
 		app.user=this.user
 		this.setConsumptions(response.data.consumptions)
@@ -764,21 +772,29 @@ var MainView = Backbone.View.extend({
 		lastly we fire change events on the items we modified
 	*/
 	setConsumptions:function(consumptions){
-		_(app.itemCollection.models).each(function(item){
-			item.reset();	
-		},this)
+		var start = (new Date().getTime());
+		if(window.initItems){
+			app.itemCollection=new ItemCollection(initItems);
+		}else{
+			app.itemCollection=new ItemCollection();
+		}
+		var f1 = (new Date().getTime());
 		var item;
 		_(consumptions).each(function(consumption){
 			item=app.itemCollection.get(consumption.item_id)
 			if(item){
 				item.countUp(true)
 			}
-		},this)
+		},this);
+		var f2 = (new Date().getTime());
 		_(app.itemCollection.models).each(function(item){
 			if(item.hasChanged()){
 			item.change()
 			}
-		})
+		});
+		var f3 = (new Date().getTime());
+		//console.log("ItemCollection: " + app.itemCollection.models.length);
+		//console.log("F1: " + (f1-start) + "ms - F2: " + (f2-f1) + "ms  - F3: " + (f3-f2) + "ms ");
 	},
 	/* 
 		sets the app in a locked state

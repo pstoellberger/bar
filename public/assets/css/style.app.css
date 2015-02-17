@@ -26,7 +26,7 @@ width: 100%;
 .header .button.active{
 	color: #fe6a00!important;
 }
-.tray .exit{
+ .exit{
 cursor: pointer;
 line-height: 60px;
 vertical-align: middle;
@@ -51,6 +51,114 @@ float: right;
 padding-left: 0;
 padding-right: 10;
 }
+.events{
+width: 600px;
+margin:50px auto;
+-webkit-user-select:none;
+}
+.events .exit {
+  width: 200px;
+
+
+}
+.event_collection {
+	margin-top: 20px;
+}
+
+.new_event{
+font-size: 12px;
+text-decoration: none;
+}
+.new_event .row {
+	padding: 5px;
+}
+.new_event .title {
+	width: 130px;
+}
+.new_event .date {
+	width: 80px;
+}
+.new_event .sponsoring,
+.event_item .sponsoring {
+	width: 55px;
+}
+.new_event .vat,
+.event_item .vat {
+	width: 30px;
+	background-color: #AAA !important;
+}
+.new_event .addEvent {
+	margin-left: 10px;
+}
+.new_event .addEvent,
+.new_event .vat {
+	float: right;
+}
+.new_event label {
+	margin-right: 5px;
+	margin-left: 10px;
+}
+.new_event input,
+.event_item input {
+	line-height: 30px;
+	height: 30px;
+	font-family: "Georgia";
+    font-size: 16px;
+    font-style: italic;
+}
+
+.event_item .btn {
+	float: right;
+	margin-left: 10px;
+}
+.events .enterEvent,.events .btn {
+    background-color: orange;
+    border: 1px solid #eee;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    width: 50px;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 2px;
+    cursor: pointer;
+}
+.events .closeEvent{
+	background-color: green;
+}
+
+.event_item{
+    border-top: 1px solid #CCCCCC;
+    cursor: pointer;
+    padding: 10px;
+    height: 50px;
+    font-size: 12px;
+}
+.event_item .meta {
+	width: 200px;
+	float: left;
+}
+.event_item .edit {
+	width: 220px;
+	float: left;
+}
+.event_item .btns {
+	width: 160px;
+	float: left;
+}
+
+
+.event_title{
+    font-weight: 500;
+    font-size: 12px;
+}
+.event_date{
+    font-weight: 100;
+    font-size: 10px;
+    text-align: left;
+}
+
 .lock{
 width: 300px;
 margin:100px auto;
@@ -188,7 +296,10 @@ cursor: pointer;
 	clear:both;
 	border-bottom: 1px solid #f6f6f6;
 }
+.tray .red {
+	background-color: red;
 
+}
 
 .tray-item .item-price{
 	float: right;

@@ -17,6 +17,15 @@ class Model_Event extends Orm\Model {
             'label' => 'Status',
             'default' =>''
         ),
+        'saldo' => array(
+            'type' => 'float',
+            'label' => 'Amount',
+            'default' =>''),
+
+        'sponsoring' => array(
+            'type' => 'float',
+            'label' => 'Sponsoring',
+            'default' =>''),
 
         'created_at' => array('type' => 'int', 'label' => 'Created At'),
         'updated_at' => array('type' => 'int', 'label' => 'Updated At'),
@@ -27,4 +36,14 @@ class Model_Event extends Orm\Model {
 		'Orm\\Observer_UpdatedAt' => array('before_save'),
 		'Orm\\Observer_Validation' => array('before_save')
 	);
+
+    public function update_saldo(){
+
+        $query = DB::query('SELECT *, SUM(price) as saldo FROM event_consumptions WHERE event_id='.$this->id.' AND STATUS=1');
+        $result=$query->execute()->as_array();
+        $saldo=$result[0]['saldo'];
+        
+        $this->saldo=$saldo;
+        $this->save();
+    }
 }

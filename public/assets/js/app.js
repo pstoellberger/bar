@@ -1030,7 +1030,7 @@ var MainView = Backbone.View.extend({
 	*/
 	setTimer:function(millis){
 		if(this.timerId){clearTimeout(this.timerId)}
-		millis= millis || (app.isEvent ? 300000 : 60000);
+		millis= millis || (app.isEvent ? 3000000 : 60000);
 		var self=this
 		this.timerId=setTimeout(function(){app.trigger("lock")},millis);
 	},

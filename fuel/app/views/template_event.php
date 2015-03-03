@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta name="apple-mobile-web-app-capable" content="yes" />
-	<link rel="apple-touch-icon" href="<?php echo Asset::find_file('appicon.png', 'img'); ?>"/>
+	<link rel="apple-touch-icon" href="<?php echo Asset::find_file('appicon-event.png', 'img'); ?>"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	<meta charset="utf-8">
 	<title><?php echo $title; ?></title>

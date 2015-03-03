@@ -10,7 +10,7 @@
  * @extends  Controller
  */
 class Controller_Event extends Controller_Template {
-	 public $template = 'template_app';
+	 public $template = 'template_event';
 	/**
 	 * The index action.
 	 * 

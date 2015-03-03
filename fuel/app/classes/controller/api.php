@@ -299,7 +299,7 @@ class Controller_Api extends Controller_Rest {
     }
 
     public function get_events() {
-        $items=DB::select()->from('events')->as_object('Model_Event')->where('status','<>',1)->order_by('id', 'desc')->execute();
+        $items=DB::select()->from('events')->as_object('Model_Event')->where('status','<>',1)->where('event_price','>',0)->order_by('id', 'desc')->execute();
     }
 
 

@@ -1,7 +1,7 @@
 <?php
 
 class Model_Eventconsumption extends Orm\Model {
-	protected static $_has_one = array('item');
+	//protected static $_has_one = array('user','item','event');
 	
 	protected static $_observers = array(
 		'Orm\Observer_CreatedAt' => array('before_insert'),
@@ -9,4 +9,4 @@ class Model_Eventconsumption extends Orm\Model {
 	);
 }
 
-/* End of file consumption.php */
+/* End of file eventconsumption.php */

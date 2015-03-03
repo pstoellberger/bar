@@ -39,7 +39,7 @@ class Model_Event extends Orm\Model {
 
     public function update_saldo(){
 
-        $query = DB::query('SELECT *, SUM(price) as saldo FROM event_consumptions WHERE event_id='.$this->id.' AND STATUS=1');
+        $query = DB::query('SELECT *, SUM(price) as saldo FROM eventconsumptions WHERE event_id='.$this->id.' AND STATUS=1');
         $result=$query->execute()->as_array();
         $saldo=$result[0]['saldo'];
         

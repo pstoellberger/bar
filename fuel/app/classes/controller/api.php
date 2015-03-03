@@ -137,7 +137,7 @@ class Controller_Api extends Controller_Rest {
 
         $consumptions=array();
         $items_cache=array();
-        $query = DB::insert('event_consumptions');
+        $query = DB::insert('eventconsumptions');
 
         $query->columns(array(
                 'event_id',
@@ -232,7 +232,7 @@ class Controller_Api extends Controller_Rest {
         }
 
 
-        $consumptions=DB::select()->from('event_consumptions')->where('event_id',$event_id)->where('status',1)->execute();
+        $consumptions=DB::select()->from('eventconsumptions')->where('event_id',$event_id)->where('status',1)->execute();
         $this->response($this->api_response(200, array("consumptions"=>$consumptions->as_array(), "event"=>$event )));
     }
 

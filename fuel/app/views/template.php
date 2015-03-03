@@ -25,6 +25,7 @@
 					<?php echo Html::anchor('admin/', 'Dashboard',array('class'=>'brand')); ?>
 					<ul>
 						<li><?php echo Html::anchor('admin/users', 'Users'); ?></li>
+						<li><?php echo Html::anchor('admin/events', 'Events'); ?></li>
 						<li><?php echo Html::anchor('admin/items', 'Items'); ?></li>
 					</ul>
 					<p class="pull-right"><?php echo Html::anchor('admin/logout', 'Log out'); ?></p>

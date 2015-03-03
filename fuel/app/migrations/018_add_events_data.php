@@ -6,7 +6,7 @@ class Add_events_data {
 
 	public function up()
 	{
-    \DBUtil::create_table('event_consumptions', array(
+    \DBUtil::create_table('eventconsumptions', array(
 			'id' => array('constraint' => 11, 'type' => 'int', 'auto_increment' => true),
 			'user_id' => array('constraint' => 11, 'type' => 'int'),
 			'event_id' => array('constraint' => 11, 'type' => 'int'),
@@ -31,7 +31,7 @@ class Add_events_data {
 			'status' => array('constraint' => 11, 'type' => 'int'),
 		), array('id'));
 
-		\DBUtil::create_table('event_sponsorings', array(
+		\DBUtil::create_table('eventsponsorings', array(
 			'id' => array('constraint' => 11, 'type' => 'int', 'auto_increment' => true),
 			'event_id' => array('constraint' => 11, 'type' => 'int'),
 			'sponsor' => array('constraint' => 255, 'type' => 'varchar'),
@@ -45,8 +45,8 @@ class Add_events_data {
 	public function down()
 	{
 		\DBUtil::drop_table('events');
-		\DBUtil::drop_table('event_consumptions');
-		\DBUtil::drop_table('event_sponsorings');
+		\DBUtil::drop_table('eventconsumptions');
+		\DBUtil::drop_table('eventsponsorings');
 
 
 

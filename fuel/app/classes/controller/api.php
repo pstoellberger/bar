@@ -131,7 +131,10 @@ class Controller_Api extends Controller_Rest {
         $items=Input::get('items');
         if(!isset($event_id) || !isset($items) || $items=="" || $event_id==""){ echo "bad parameters"; return; }
 
+        $pin=Input::get('pin');
         $event=Model_Event::find()->where('id', $event_id)->get_one();
+
+        $user=Model_User::find()->where('pin', $pin)->get_one();
 
         $items=explode(",",$items);
 
@@ -140,6 +143,7 @@ class Controller_Api extends Controller_Rest {
         $query = DB::insert('eventconsumptions');
 
         $query->columns(array(
+                'user_id',
                 'event_id',
                 'item_id',
                 'price',
@@ -160,7 +164,7 @@ class Controller_Api extends Controller_Rest {
                 $items_cache[$item_id]=$item;
              }
              // how do i get the category label out?
-             $query->values(array($event->id,$item->id,$item->event_price,$item->cost,$item->event_price - $item->cost,1,$item->title,$time,$time,$time, $item->category->label));
+             $query->values(array($user->id, $event->id,$item->id,$item->event_price,$item->cost,$item->event_price - $item->cost,1,$item->title,$time,$time,$time, $item->category->label));
         }
         $query->execute();
         $event->update_saldo();

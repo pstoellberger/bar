@@ -36,7 +36,7 @@ var consumptionTemplate="<span class='consumption-title'>{{title}}</span><span c
 	
 var lockTemplate="<div type='password' class='pin-input-hidden hidden'></div><div type='password' class='pin-input'></div><span class='num-key'>1</span><span class='num-key'>2</span><span class='num-key'>3</span><span class='num-key'>4</span><span class='num-key'>5</span><span class='num-key'>6</span><span class='num-key'>7</span><span class='num-key'>8</span><span class='num-key'>9</span><span class='num-key'>0</span><span class='button clear-key'>clear</span><span class='button enter-key'>enter</span><div class='clear'></div>"
 var eventbartabTemplate="<div class='eventBarTab'><small>Total: {{price}} € <br/>Sponsoring: {{sponsoring}} €</small></div>";
-var eventsTemplate="<div>Events<div class='new_event'>New Event<div class='row'><label>Name</label><input class='title' type='text'></input><label>Date</label><input class='date' placeholder='20150101' type='text'></input><label>Sponsoring</label><input class='sponsoring' placeholder='100' type='text'></input> € <div class='addEvent btn'>Add</div><div class='btn vat'>- 20%</div></div></div><div class='event_collection'></div><div class='exit'>Exit</div></div>";
+var eventsTemplate="<div>Events<div class='new_event'>New Event<div class='row'><label>Google:</label><select class='googleEvents' type='text'></select><label>Name</label><input class='title' type='text'></input><label>Date</label><input class='date' placeholder='20150101' type='text'></input><label>Sponsoring</label><input class='sponsoring' placeholder='100' type='text'></input> € <div class='addEvent btn'>Add</div><div class='btn vat'>- 20%</div></div></div><div class='event_collection'></div><div class='exit'>Exit</div></div>";
 var eventSponsoringTemplate="Sponsorings:<br><div class='row_sponsoring row'><label>Company</label><input class='company' type='text'></input><label>Amount</label><input class='amount' placeholder='150' type='text'></input><input class='ust' type='checkbox'>Incl. UST</input></div><div class='row_sponsoring row'><label>Company</label><input class='company' type='text'></input><label>Amount</label><input class='amount' placeholder='150' type='text'></input><input class='ust' type='checkbox'>Incl. UST</input></div><div class='row_sponsoring row'><label>Company</label><input class='company' type='text'></input><label>Amount</label><input class='amount' placeholder='150' type='text'></input><input class='ust' type='checkbox'>Incl. UST</input></div>";
 var eventsItemTemplate="<div class='event_item'><div class='meta'><div class='event_title'><span class='id hidden'>{{id}}</span>{{title}} (Total: {{saldo}} €)</div><div class='event_date'>{{event_date}}</div></div><div class='edit'>Sponsoring<input class='sponsoring' placeholder='' type='text' value='{{sponsoring}}'></input> € <div class='btn vat'>- 20%</div></div><div class='btns'><div class='btn closeEvent'>Finish</div><div class='enterEvent btn'>Enter</div></div></div>";
 
@@ -105,7 +105,7 @@ var TrayView = Backbone.View.extend({
 		'touchstart .exit':'lock'
 	},
 	initialize:function(){
-		_.bindAll(this,"render","appendItem","placeOrder","addItem","removeItem",'clear',"orderComplete","updateBarTab","updateOrder")
+		_.bindAll(this,"render","appendItem","placeOrder","addItem","removeItem",'clear',"orderComplete","calcBarTab", "updateBarTab","updateOrder")
 		app.bind("lock",this.clear)
 		app.bind("removeFromTray",this.removeItem)
 		app.bind("addToTray",this.addItem)
@@ -136,6 +136,7 @@ var TrayView = Backbone.View.extend({
 	render:function(){
 		$(this.el).html("");
 		if(app.isEvent && app.selectedEvent){
+			this.calcBarTab();
 			$(this.el).html(ich.eventbartab({"event":app.selectedEvent.get('title'),price:utils.formatPrice(this.bartab), sponsoring:utils.formatPrice(app.selectedEvent.get('sponsoring')) }));
 			if (app.selectedEvent.get('sponsoring') && app.selectedEvent.get('sponsoring') > 0 && app.selectedEvent.get('sponsoring') <= this.bartab) {
 				$(this.el).find('.eventBarTab').addClass('red');
@@ -157,7 +158,7 @@ var TrayView = Backbone.View.extend({
 	/* 
 		calculates the current bar tab of the logged in user
 	*/
-	updateBarTab:function(){
+	calcBarTab: function() {
 		this.bartab=0;
 		_(app.itemCollection.models).each(function(item){
 			if(item.get("user_count")>0){
@@ -169,6 +170,10 @@ var TrayView = Backbone.View.extend({
 			 }
 			}
 		},this)
+	},
+
+	updateBarTab:function(){
+		this.calcBarTab();
 		this.render();
 	},
 	/* 
@@ -265,6 +270,7 @@ var TrayView = Backbone.View.extend({
 				}
 			})
 			this.clear()
+			this.updateBarTab();
 		}
 	},
 	/*
@@ -753,6 +759,7 @@ var EventView = Backbone.View.extend({
 		'touchstart .exit':'lock',
 		'click .vat':'updateVat',
 		'touchstart .vat':'updateVat',
+		'change .googleEvents' : 'selectEvent'
 	},
 	initialize:function(){
 		_.bindAll(this,"render","enterEvent","addEvent")
@@ -771,8 +778,31 @@ var EventView = Backbone.View.extend({
 		_(app.eventsCollection.models).each(function(e){
 			$(self.el).append(ich.eventItem(e.attributes));
 		});
-		this.delegateEvents()
+		if (!app.googleEvents) {
+			$(self.el).find('.googleEvents').remove();
+		} else {
+			for (var i in app.googleEvents.items) {
+				var title = app.googleEvents.items[i].summary;
+				var d = app.googleEvents.items[i].start.dateTime;
+				var ds = d.substr(0,4) + "" + d.substr(5,2) + "" + d.substr(8,2);
+				var opt = "<option value='" + title + "' date='" + ds + "'>" + title + " | " + ds + "</option>";
+				$(opt).appendTo($(self.el).find('.googleEvents'));
+			}
+			this.selectEvent();
+		}
+		this.delegateEvents();
+		
 		return this;
+	},
+	selectEvent: function() {
+		var opt = $(this.el).find('.googleEvents option:selected');
+		if (opt) {
+			var title = opt.val();
+			var dat = opt.attr('date');
+			$(this.el).find('.new_event .title').val(title);
+			$(this.el).find('.new_event .date').val(dat);
+		}
+
 	},
 	updateVat: function(e) {
 		var sponsoring = $(e.target).parent().parent().find('.sponsoring').val();
@@ -1114,6 +1144,35 @@ var MainRouter = Backbone.Router.extend({
 	app.views={}
 	app.routers={}
 	
+	app.googleEvents = null;
+	app.getGoogleEvents= function() {
+		var year = new Date().getFullYear() + "";
+		var month = (new Date().getMonth()+1) < 10 ? "0" : "";
+		month+= "" + (new Date().getMonth()+1);
+		var day = (new Date().getDate()) < 10 ? "0" : "";
+		day+= "" + (new Date().getDate());
+		var timeMin = year + "-" + month + "-" + day + "T00:01:00.000Z";
+
+		var mykey = 'AIzaSyCQGV9juHIDCQiInHpv4i3_CURCveW8T9g'; // typically like Gtg-rtZdsreUr_fLfhgPfgff
+		var calendarid = 'sektor5.at_7sutpcoi6ubj198nle6hs1liuk@group.calendar.google.com'; // will look somewhat like 3ruy234vodf6hf4sdf5sd84f@group.calendar.google.com
+
+		$.ajax({
+		    type: 'GET',
+		    url: encodeURI('https://www.googleapis.com/calendar/v3/calendars/' + calendarid+ '/events?key=' + mykey),
+		    data: {
+		    	maxResults: 20,
+		    	orderBy: "starttime",
+		    	singleEvents: true,
+		    	timeMin: timeMin
+		    },
+		    dataType: 'json',
+		    success: function (response) {
+		    	app.googleEvents = response;
+		    },
+		    error: function (response) {
+		    }
+		});
+	}
 	// main init method
 	app.initialize=function(){
 		/* 
@@ -1132,6 +1191,8 @@ var MainRouter = Backbone.Router.extend({
 		if(window.isEvent){
 			app.isEvent = true;
 			app.selectedEvent = null;
+			app.getGoogleEvents();
+
 		} else {
 			
 		}

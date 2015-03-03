@@ -1,0 +1,2 @@
+/Applications/MAMP/bin/php/php5.6.2/bin/php oil refine migrate
+mysql --socket=/Applications/MAMP/tmp/mysql/mysql.sock -u root

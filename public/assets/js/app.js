@@ -21,17 +21,24 @@ var helpTemplate="<h2>1.) I forgot my pin code</h2><p>Please ask Yves or Christo
 	helpTemplate+="<small class='credits'>created by @christoph_peter with Fuelphp, underscroe.js, backbone.js, jQuery.js,keymaster.js & ICanHaz.js. Code on github https://github.com/chrillo/Bar</small>"
  
 var itemTemplate="<span class='item-name'>{{title}}</span><span class='item-price'>{{price}}€</span><span class='item-count'>{{user_count}}</span>";
+var eventitemTemplate="<span class='item-name'>{{title}}</span><span class='item-price'>{{event_price}}€</span><span class='item-count'>{{user_count}}</span>";
 var trayItemTemplate="<span class='item-name'>{{title}}</span><span class='item-price'>{{price}}€</span>";
+var eventtrayItemTemplate="<span class='item-name'>{{title}}</span><span class='item-price'>{{event_price}}€</span>";
 
 var orderTemplate="<span class='button order {{css}}'><span class='order-text'>{{text}}</span><br/><small>{{items}} item{{s}} for <span class='tray-price'>{{price}}</span>€</small> </span>";
 
 var bartabTemplate="<span class='user-name'>Hi, {{username}}! Your bar tab is:</span><span class='bar-tab'><span>{{price}}€</span></span>";
+
 var headerTemplate="<span class='categories'></span>{{#user}}<span class='button username'>{{username}}</span>{{/user}}";
 
 
 var consumptionTemplate="<span class='consumption-title'>{{title}}</span><span class='consumption-count'>({{count}})</span><span class='consumption-sum'></span> for {{price}}<span class='consumption-items'></span>";	
 	
 var lockTemplate="<div type='password' class='pin-input-hidden hidden'></div><div type='password' class='pin-input'></div><span class='num-key'>1</span><span class='num-key'>2</span><span class='num-key'>3</span><span class='num-key'>4</span><span class='num-key'>5</span><span class='num-key'>6</span><span class='num-key'>7</span><span class='num-key'>8</span><span class='num-key'>9</span><span class='num-key'>0</span><span class='button clear-key'>clear</span><span class='button enter-key'>enter</span><div class='clear'></div>"
+var eventbartabTemplate="<div class='eventBarTab'><small>Total: {{price}} € <br/>Sponsoring: {{sponsoring}} €</small></div>";
+var eventsTemplate="<div>Events<div class='new_event'>New Event<div class='row'><label>Name</label><input class='title' type='text'></input><label>Date</label><input class='date' placeholder='20150101' type='text'></input><label>Sponsoring</label><input class='sponsoring' placeholder='100' type='text'></input> € <div class='addEvent btn'>Add</div><div class='btn vat'>- 20%</div></div></div><div class='event_collection'></div><div class='exit'>Exit</div></div>";
+var eventSponsoringTemplate="Sponsorings:<br><div class='row_sponsoring row'><label>Company</label><input class='company' type='text'></input><label>Amount</label><input class='amount' placeholder='150' type='text'></input><input class='ust' type='checkbox'>Incl. UST</input></div><div class='row_sponsoring row'><label>Company</label><input class='company' type='text'></input><label>Amount</label><input class='amount' placeholder='150' type='text'></input><input class='ust' type='checkbox'>Incl. UST</input></div><div class='row_sponsoring row'><label>Company</label><input class='company' type='text'></input><label>Amount</label><input class='amount' placeholder='150' type='text'></input><input class='ust' type='checkbox'>Incl. UST</input></div>";
+var eventsItemTemplate="<div class='event_item'><div class='meta'><div class='event_title'><span class='id hidden'>{{id}}</span>{{title}} (Total: {{saldo}} €)</div><div class='event_date'>{{event_date}}</div></div><div class='edit'>Sponsoring<input class='sponsoring' placeholder='' type='text' value='{{sponsoring}}'></input> € <div class='btn vat'>- 20%</div></div><div class='btns'><div class='btn closeEvent'>Finish</div><div class='enterEvent btn'>Enter</div></div></div>";
 
 /* 
 add the templates to iCanHaz
@@ -41,9 +48,14 @@ ich.addTemplate("help",helpTemplate);
 ich.addTemplate("bartab",bartabTemplate)
 ich.addTemplate("consumption",consumptionTemplate)
 ich.addTemplate("lock",lockTemplate);
+ich.addTemplate("eventCol",eventsTemplate);
+ich.addTemplate("eventItem",eventsItemTemplate);
+ich.addTemplate("eventbartab",eventbartabTemplate);
 ich.addTemplate("order",orderTemplate);
 ich.addTemplate("item",itemTemplate);
+ich.addTemplate("eventitem",eventitemTemplate);
 ich.addTemplate("trayItem",trayItemTemplate);
+ich.addTemplate("eventtrayItem",eventtrayItemTemplate);
 ich.addTemplate("header",headerTemplate);
 
 /*
@@ -54,6 +66,7 @@ ich.addTemplate("header",headerTemplate);
 
 var UserModel = Backbone.Model.extend({})
 var CategoryModel=Backbone.Model.extend({});
+var EventModel=Backbone.Model.extend({});
 var ItemModel = Backbone.Model.extend({
 	initialize:function(){_.bindAll(this,"countUp","reset")},
 	countUp:function(silent){
@@ -74,6 +87,7 @@ var ItemModel = Backbone.Model.extend({
 */
 
 var ItemCollection = Backbone.Collection.extend({model:ItemModel});
+var EventsCollection = Backbone.Collection.extend({model:EventModel});
 var CategoryCollection = Backbone.Collection.extend({model:CategoryModel});
 
 
@@ -119,9 +133,15 @@ var TrayView = Backbone.View.extend({
 	/*
 		renders the order button and all items in the tray
 	*/
-	render:function(){	
-		if(app.user){
-			$(this.el).html(ich.bartab({username:app.user.get("username"),price:utils.formatPrice(this.bartab)}));
+	render:function(){
+		$(this.el).html("");
+		if(app.isEvent && app.selectedEvent){
+			$(this.el).html(ich.eventbartab({"event":app.selectedEvent.get('title'),price:utils.formatPrice(this.bartab), sponsoring:utils.formatPrice(app.selectedEvent.get('sponsoring')) }));
+			if (app.selectedEvent.get('sponsoring') && app.selectedEvent.get('sponsoring') > 0 && app.selectedEvent.get('sponsoring') <= this.bartab) {
+				$(this.el).find('.eventBarTab').addClass('red');
+			} else {
+				$(this.el).find('.eventBarTab').removeClass('red');
+			}
 		}
 		$(this.el).append("<div class='order-wrapper'></div>")
 		$(this.el).append("<div class='exit'>Exit</div>");
@@ -141,7 +161,12 @@ var TrayView = Backbone.View.extend({
 		this.bartab=0;
 		_(app.itemCollection.models).each(function(item){
 			if(item.get("user_count")>0){
-			 this.bartab+=(item.get("price")*1*item.get("user_count")*1);
+			 if (app.isEvent) {
+			 	//console.log("Event:" + item.get("event_price") + " - " + this.bartab);
+				this.bartab+=(item.get("event_price")*1*item.get("user_count")*1);
+			 } else {
+			 	this.bartab+=(item.get("price")*1*item.get("user_count")*1);
+			 }
 			}
 		},this)
 		this.render();
@@ -153,7 +178,11 @@ var TrayView = Backbone.View.extend({
 	addItem:function(item){
 		app.views.mainview.setTimer()
 		this.items.push(item)
-		this.price+=item.get("price")*1
+		if (app.isEvent) {
+			this.price+=item.get("event_price")*1
+		} else {
+			this.price+=item.get("price")*1
+		}
 		this.appendItem(item);
 	},
 	/*
@@ -163,7 +192,12 @@ var TrayView = Backbone.View.extend({
 	removeItem:function(item){
 		for(var i=0,n=this.items.length;i<n;i++){
 			if(this.items[i]==item){
-				this.price-=item.get("price")*1
+				if (app.isEvent) {
+					this.price-=item.get("event_price")*1
+				} else {
+					this.price-=item.get("price")*1
+				}
+				
 				this.items.splice(i,1);
 				break;
 			}
@@ -195,11 +229,13 @@ var TrayView = Backbone.View.extend({
 			ids.push(item.get('id'))
 		},this)
 		var pin=app.user.get("pin");
-		var self=this
-		app.views.mainview.setTimer()
+		var evid=app.selectedEvent ? app.selectedEvent.get('id') : "";
+		var self=this;
+		app.views.mainview.setTimer();
+		var apitarget = app.isEvent ? "placeeventorder" : "placeorder";
 		$.ajax({
-			url: app.root+"api/placeorder",
-			data:{items:ids.join(","),pin:pin},
+			url: app.root+"api/" + apitarget,
+			data:{items:ids.join(","),pin:pin, "event": evid},
   			context: document.body,
   			success: function(response){	
   			  self.orderComplete(response)
@@ -275,7 +311,11 @@ var ItemTrayView = Backbone.View.extend({
 		this.model.bind("change",this.render)
 	},
 	render:function(){
-		$(this.el).html(ich.trayItem(this.model.toJSON()))
+		var html = ich.trayItem(this.model.toJSON());
+		if (app.isEvent) {
+			html = ich.eventtrayItem(this.model.toJSON());
+		}
+		$(this.el).html(html)
 		return this
 	},
 	/*
@@ -328,6 +368,11 @@ var ItemView = Backbone.View.extend({
 				$(this.el).removeClass('item-maxed')
 			}
 		var html=ich.item(data);
+
+		if (app.isEvent) {
+			html = ich.eventitem(data);
+		}
+
 		$(this.el).html(html)
 		if(this.model.hasChanged('user_count') && this.model.get('user_count') > 0)
 		{
@@ -586,7 +631,8 @@ var HeaderView = Backbone.View.extend({
 	},
 	/* renders the menu buttons and the categorie buttons */
 	render:function(){
-		$(this.el).html(ich.header({user:app.user, username: app.user?app.user.get('username') : "" }));
+		var username = app.isEvent && app.selectedEvent ? "Event: " + app.selectedEvent.get('title') : (app.user?app.user.get('username') : "" );
+		$(this.el).html(ich.header({user:app.user, username: username }));
 		if(app.user){
 		var self=this
 		_(app.categoryCollection.models).each(function(category){
@@ -694,6 +740,130 @@ var LockView = Backbone.View.extend({
 	}
 })
 
+var EventView = Backbone.View.extend({
+	className:'events',
+	events:{
+		'touchstart .addEvent' : 'addEvent',
+		'click .addEvent' : 'addEvent',
+		'touchstart .enterEvent' : 'enterEvent',
+		'click .enterEvent' : 'enterEvent',
+		'touchstart .closeEvent' : 'closeEvent',
+		'click .closeEvent' : 'closeEvent',
+		'click .exit':'lock',
+		'touchstart .exit':'lock',
+		'click .vat':'updateVat',
+		'touchstart .vat':'updateVat',
+	},
+	initialize:function(){
+		_.bindAll(this,"render","enterEvent","addEvent")
+	},
+	render:function(){
+		var self = this;
+		$(this.el).html(ich.eventCol());
+		var year = new Date().getFullYear() + "";
+		var month = (new Date().getMonth()+1) < 10 ? "0" : "";
+		month+= "" + (new Date().getMonth()+1);
+		var day = (new Date().getDate()) < 10 ? "0" : "";
+		day+= "" + (new Date().getDate());
+
+		var now =  year + month + day;
+		$(this.el).find('.new_event .date').val(now);
+		_(app.eventsCollection.models).each(function(e){
+			$(self.el).append(ich.eventItem(e.attributes));
+		});
+		this.delegateEvents()
+		return this;
+	},
+	updateVat: function(e) {
+		var sponsoring = $(e.target).parent().parent().find('.sponsoring').val();
+		if (sponsoring || true) {
+			if (true || $(e.target).is(':checked')) {
+				sponsoring = sponsoring / 1.2;
+			} else {
+				//$(e.target).prop('checked',false);
+				sponsoring = sponsoring * 1.2;
+			}
+		} else {
+			sponsoring = "";
+		}
+		$(e.target).parent().parent().find('.sponsoring').val(sponsoring);
+
+	},
+	addEvent: function() {
+		var self = this;
+		var title = $(this.el).find('.new_event .title').val();
+		var event_date = parseInt($(this.el).find('.new_event .date').val());
+		var sponsoring = parseFloat($(this.el).find('.new_event .sponsoring').val());
+		if (!title || !event_date) {
+			alert('Enter a title and date!');
+			return;
+		}
+		$.ajax({
+			url: app.root+"api/add_event",
+			data:{"title":title,"event_date":event_date, "sponsoring":(sponsoring ? sponsoring : 0) },
+  			context: document.body,
+  			success: function(response){	
+  			  app.views.mainview.setEvents(response.data.events);
+  			  self.render();
+  			  app.views.mainview.setTimer()
+
+  			},
+  			error:function(response){
+  				alert("There was an error!");
+  			  console.log(response);
+  			}
+  		})
+
+
+	},
+	enterEvent: function(e,t) {
+		var ev = $(e.target).parents('.event_item').find('.id').text();
+		var sponsoring = $(e.target).parents('.event_item').find('.sponsoring').val();
+		sponsoring = sponsoring ? sponsoring : "";
+		if (ev) {
+			$.ajax({
+				url: app.root+"api/enter_event",
+				data:{"event_id":ev, "sponsoring" : sponsoring},
+	  			context: document.body,
+	  			success: function(response){	
+	  			  app.views.mainview.setConsumptions(response.data.consumptions);
+	  			  app.selectedEvent=app.eventsCollection.get(ev);
+	  			  app.selectedEvent.set(response.data.event);
+				  app.views.mainview.setTimer();
+	  			  app.views.mainview.unlock();
+	  			},
+	  			error:function(response){
+	  				alert("There was an error!");
+	  			}
+	  		})			
+		}
+	},
+	closeEvent: function(e,t) {
+		var self = this;
+		var ev = $(e.target).parent().parent().find('.id').text();
+		if (ev) {
+			$.ajax({
+				url: app.root+"api/close_event",
+				data:{"event_id":ev},
+	  			context: document.body,
+	  			success: function(response){	
+	  			  app.views.mainview.setEvents(response.data.events);
+	  			  self.render();
+
+	  			},
+	  			error:function(response){
+	  				alert("There was an error!");
+	  			}
+	  		})			
+		}
+
+
+	},
+	lock:function(){
+		app.trigger("lock",false)
+	
+	}
+})
 /* 
 
 	Main view handles login / logout and is the container for all views 
@@ -704,10 +874,16 @@ var LockView = Backbone.View.extend({
 var MainView = Backbone.View.extend({
 	view:false,	
 	initialize:function(){
-		_.bindAll(this,'render','setView','lock','unlock','getUser','setUser','setConsumptions')
+		_.bindAll(this,'render','setView','lock','unlock','getEvent','getUser','setUser','setConsumptions')
 		this.lockView=new LockView();
+		this.eventview=new EventView();
 		app.views.lockview=this.lockView;
-		this.lockView.bind("enterpin",this.getUser)
+		app.views.eventview=this.eventview;
+		if (app.isEvent) {
+			this.lockView.bind("enterpin",this.getEvent)	
+		} else {
+			this.lockView.bind("enterpin",this.getUser)
+		}
 		app.bind("lock",this.lock)
 		var self=this;
 		app.bind("navigate",function(){self.setTimer()})
@@ -721,8 +897,10 @@ var MainView = Backbone.View.extend({
 	*/
 	render:function(){
 		this.el.html("");
-		this.el.append(app.views.headerview.render().el)
-		if(this.isLocked && this.view!==app.views.helpview){
+		if (this.view!==app.views.eventview) {
+			this.el.append(app.views.headerview.render().el)
+		}
+		if(this.isLocked && this.view!==app.views.helpview && this.view!==app.views.eventview){
 			this.el.append(this.lockView.render().el)
 		}else{
 			if(this.view){
@@ -748,6 +926,19 @@ var MainView = Backbone.View.extend({
   			}
   		})
 	},
+
+	getEvent:function(pin){
+		var self=this;
+		$.ajax({
+			url: app.root+"api/eventbypin",
+			data:{pin:pin},
+  			context: document.body,
+  			success: function(response){
+  				self.setUser(response)
+  			}
+  		})
+	},
+
 	/* 
 		this method checks the response status
 		if its not 200 the pin is not valid
@@ -761,9 +952,18 @@ var MainView = Backbone.View.extend({
 			return;
 		}
 		this.user=new UserModel(response.data.user);
-		app.user=this.user
-		this.setConsumptions(response.data.consumptions)
-		this.unlock();
+		app.user=this.user;
+		if(app.isEvent) {
+			this.setEvents(response.data.events);
+			this.setView(app.views.eventview);
+			this.unlock(true);
+		} else {
+			this.setConsumptions(response.data.consumptions)
+			this.unlock(false);
+			
+		}
+		
+		
 	},
 	/*  
 		first we reset all the consumption counts 
@@ -771,6 +971,10 @@ var MainView = Backbone.View.extend({
 		and increase the counters on the item models
 		lastly we fire change events on the items we modified
 	*/
+	setEvents:function(events){
+		app.eventsCollection = new EventsCollection(events);
+
+	},
 	setConsumptions:function(consumptions){
 		var start = (new Date().getTime());
 		if(window.initItems){
@@ -813,9 +1017,11 @@ var MainView = Backbone.View.extend({
 		triggers a global unlock event with current user object as a parameter	
 		renders the view and sets the auto lock timer
 	*/
-	unlock:function(){
+	unlock:function(blockTrigger){
 		this.isLocked=false;
-		app.trigger("unlock",this.user)
+		if (blockTrigger) {} else {
+			app.trigger("unlock",this.user)
+		}
 		this.render()
 		this.setTimer()
 	},
@@ -824,7 +1030,7 @@ var MainView = Backbone.View.extend({
 	*/
 	setTimer:function(millis){
 		if(this.timerId){clearTimeout(this.timerId)}
-		millis= millis || 60000;
+		millis= millis || (app.isEvent ? 300000 : 60000);
 		var self=this
 		this.timerId=setTimeout(function(){app.trigger("lock")},millis);
 	},
@@ -902,6 +1108,7 @@ var MainRouter = Backbone.Router.extend({
 
 	// basic app setup
 	window.app=_.extend({}, Backbone.Events);
+	app.isEvent=false;
 	app.root="/bar/public/"
 	app.hasTouch="ontouchstart" in document.documentElement;
 	app.views={}
@@ -919,6 +1126,14 @@ var MainRouter = Backbone.Router.extend({
 			app.itemCollection=new ItemCollection(initItems);
 		}else{
 			app.itemCollection=new ItemCollection();
+		}
+
+		app.eventsCollection = new EventsCollection();
+		if(window.isEvent){
+			app.isEvent = true;
+			app.selectedEvent = null;
+		} else {
+			
 		}
 	
 		if(window.initCategories){

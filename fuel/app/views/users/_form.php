@@ -36,7 +36,7 @@
                 if(isset($user) && $user->is_team == 1){
                         echo Form::checkbox('is_team', '1',  array('checked' =>$user->is_team));
                 } else {
-                        echo Form::checkbox('is_team', false);
+                        echo Form::checkbox('is_team', '1');
                 }
                 ?>
 	</p>

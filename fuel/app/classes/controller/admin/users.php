@@ -91,7 +91,7 @@ class Controller_Admin_Users extends Controller_Admin {
 				'username' => Input::post('username'),
 				'firstname' => Input::post('firstname'),
 				'lastname' => Input::post('lastname'),
-				'password' => \Auth::instance()->hash_password(Input::post('password') || md5(mktime())),
+				'password' => \Auth::instance()->hash_password(Input::post('password') || md5(time())),
 				'email' => Input::post('email'),
 				'pin' => Input::post('pin'),
 				'profile_fields' => Input::post('profile_fields'),

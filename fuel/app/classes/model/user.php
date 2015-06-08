@@ -21,7 +21,7 @@ class Model_User extends Orm\Model {
          'email' => array(
             'type' => 'varchar',
             'label' => 'Email',
-            'validation' => array('required','valid_email')
+            'validation' => array('required', 'min_length' => array(5), 'max_length' => array(220))
         ),
         'firstname' => array(
         	'type' =>'varchar',

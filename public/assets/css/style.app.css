@@ -121,7 +121,7 @@ text-decoration: none;
     color: white;
     font-size: 14px;
     font-weight: bold;
-    padding: 2px;
+    padding: 5px;
     cursor: pointer;
 }
 .events .closeEvent{

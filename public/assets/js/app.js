@@ -36,7 +36,7 @@ var consumptionTemplate="<span class='consumption-title'>{{title}}</span><span c
 	
 var lockTemplate="<div type='password' class='pin-input-hidden hidden'></div><div type='password' class='pin-input'></div><span class='num-key'>1</span><span class='num-key'>2</span><span class='num-key'>3</span><span class='num-key'>4</span><span class='num-key'>5</span><span class='num-key'>6</span><span class='num-key'>7</span><span class='num-key'>8</span><span class='num-key'>9</span><span class='num-key'>0</span><span class='button clear-key'>clear</span><span class='button enter-key'>enter</span><div class='clear'></div>"
 var eventbartabTemplate="<div class='eventBarTab'><small>Total: {{price}} € <br/>Sponsoring: {{sponsoring}} €</small></div>";
-var eventsTemplate="<div>Events<div class='new_event'>New Event<div class='row'><label>Google:</label><select class='googleEvents' type='text'></select><label>Name</label><input class='title' type='text'></input><label>Date</label><input class='date' placeholder='20150101' type='text'></input><label>Sponsoring</label><input class='sponsoring' placeholder='100' type='text'></input> € <div class='addEvent btn'>Add</div><div class='btn vat'>- 20%</div></div></div><div class='event_collection'></div><div class='exit'>Exit</div></div>";
+var eventsTemplate="<div>Events<div class='new_event'>New Event<div class='row'><label>Google:</label><select class='googleEvents' type='text'></select><br><br><label>Name</label><input class='title' type='text'></input><label>Date</label><input class='date' placeholder='20150101' type='text'></input><label>Sponsoring</label><input class='sponsoring' placeholder='100' type='text'></input> € <div class='addEvent btn'>Add</div><div class='btn vat'>- 20%</div></div></div><div class='event_collection'></div><div class='exit'>Exit</div></div>";
 var eventSponsoringTemplate="Sponsorings:<br><div class='row_sponsoring row'><label>Company</label><input class='company' type='text'></input><label>Amount</label><input class='amount' placeholder='150' type='text'></input><input class='ust' type='checkbox'>Incl. UST</input></div><div class='row_sponsoring row'><label>Company</label><input class='company' type='text'></input><label>Amount</label><input class='amount' placeholder='150' type='text'></input><input class='ust' type='checkbox'>Incl. UST</input></div><div class='row_sponsoring row'><label>Company</label><input class='company' type='text'></input><label>Amount</label><input class='amount' placeholder='150' type='text'></input><input class='ust' type='checkbox'>Incl. UST</input></div>";
 var eventsItemTemplate="<div class='event_item'><div class='meta'><div class='event_title'><span class='id hidden'>{{id}}</span>{{title}} (Total: {{saldo}} €)</div><div class='event_date'>{{event_date}}</div></div><div class='edit'>Sponsoring<input class='sponsoring' placeholder='' type='text' value='{{sponsoring}}'></input> € <div class='btn vat'>- 20%</div></div><div class='btns'><div class='btn closeEvent'>Finish</div><div class='enterEvent btn'>Enter</div></div></div>";
 
@@ -145,7 +145,12 @@ var TrayView = Backbone.View.extend({
 			}
 		}
 		$(this.el).append("<div class='order-wrapper'></div>")
-		$(this.el).append("<div class='exit'>Exit</div>");
+		if (app.isEvent) {
+			$(this.el).append("<div class='exit'>Back</div>");
+		} else {
+			$(this.el).append("<div class='exit'>Exit</div>");	
+		}
+		
 		this.updateOrder();	
 		
 		_(this.items).each(function(item){
@@ -295,8 +300,10 @@ var TrayView = Backbone.View.extend({
 		TODO: do this with an event trigger to remove dependencie on mainview
 	 */
 	lock:function(){
-		app.trigger("lock",false)
-	
+		if (app.isEvent)
+			app.views.mainview.setView(app.views.eventview);
+		else
+			app.trigger("lock",false)
 	}
 
 })
@@ -859,8 +866,9 @@ var EventView = Backbone.View.extend({
 	  			  app.views.mainview.setConsumptions(response.data.consumptions);
 	  			  app.selectedEvent=app.eventsCollection.get(ev);
 	  			  app.selectedEvent.set(response.data.event);
-				  app.views.mainview.setTimer();
+				    app.views.mainview.setTimer();
 	  			  app.views.mainview.unlock();
+	  			  app.routers.mainrouter.bar()
 	  			},
 	  			error:function(response){
 	  				alert("There was an error!");

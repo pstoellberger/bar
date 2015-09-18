@@ -2,6 +2,10 @@ body{
 padding-top: 0px!important;
 -webkit-user-select:none;
 }
+.hide {
+  display: none;
+}
+
 .header{
 background: #000;
 height: 60px;
@@ -124,8 +128,22 @@ text-decoration: none;
     padding: 5px;
     cursor: pointer;
 }
+
+
+.events .enterEvent{
+  background-color: green;
+}
+
+
 .events .closeEvent{
 	background-color: green;
+}
+.events .finishEvent{
+  background-color: red;
+}
+.events .cancelFinish{
+  background-color: lightgrey;
+  color: black;
 }
 
 .event_item{

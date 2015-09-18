@@ -38,7 +38,7 @@ var lockTemplate="<div type='password' class='pin-input-hidden hidden'></div><di
 var eventbartabTemplate="<div class='eventBarTab'><small>Total: {{price}} € <br/>Sponsoring: {{sponsoring}} €</small></div>";
 var eventsTemplate="<div>Events<div class='new_event'>New Event<div class='row'><label>Google:</label><select class='googleEvents' type='text'></select><br><br><label>Name</label><input class='title' type='text'></input><label>Date</label><input class='date' placeholder='20150101' type='text'></input><label>Sponsoring</label><input class='sponsoring' placeholder='100' type='text'></input> € <div class='addEvent btn'>Add</div><div class='btn vat'>- 20%</div></div></div><div class='event_collection'></div><div class='exit'>Exit</div></div>";
 var eventSponsoringTemplate="Sponsorings:<br><div class='row_sponsoring row'><label>Company</label><input class='company' type='text'></input><label>Amount</label><input class='amount' placeholder='150' type='text'></input><input class='ust' type='checkbox'>Incl. UST</input></div><div class='row_sponsoring row'><label>Company</label><input class='company' type='text'></input><label>Amount</label><input class='amount' placeholder='150' type='text'></input><input class='ust' type='checkbox'>Incl. UST</input></div><div class='row_sponsoring row'><label>Company</label><input class='company' type='text'></input><label>Amount</label><input class='amount' placeholder='150' type='text'></input><input class='ust' type='checkbox'>Incl. UST</input></div>";
-var eventsItemTemplate="<div class='event_item'><div class='meta'><div class='event_title'><span class='id hidden'>{{id}}</span>{{title}} (Total: {{saldo}} €)</div><div class='event_date'>{{event_date}}</div></div><div class='edit'>Sponsoring<input class='sponsoring' placeholder='' type='text' value='{{sponsoring}}'></input> € <div class='btn vat'>- 20%</div></div><div class='btns'><div class='btn closeEvent'>Finish</div><div class='enterEvent btn'>Enter</div></div></div>";
+var eventsItemTemplate="<div class='event_item'><div class='meta'><div class='event_title'><span class='id hidden'>{{id}}</span>{{title}} (Total: {{saldo}} €)</div><div class='event_date'>{{event_date}}</div></div><div class='edit'>Sponsoring<input class='sponsoring' placeholder='' type='text' value='{{sponsoring}}'></input> € <div class='btn vat'>- 20%</div></div><div class='btns unclosedBtns'><div class='btn finishEvent'>Finish</div><div class='enterEvent btn'>Enter</div></div><div class='btns hide closedBtns'><div class='btn closeEvent'>YES</div><div class='cancelFinish btn'>NO</div></div></div>";
 
 /* 
 add the templates to iCanHaz
@@ -762,6 +762,13 @@ var EventView = Backbone.View.extend({
 		'click .enterEvent' : 'enterEvent',
 		'touchstart .closeEvent' : 'closeEvent',
 		'click .closeEvent' : 'closeEvent',
+		'touchstart .finishEvent' : 'finishEvent',
+		'click .finishEvent' : 'finishEvent',
+		'touchstart .cancelFinish' : 'cancelFinish',
+		'click .cancelFinish' : 'cancelFinish',
+
+
+		
 		'click .exit':'lock',
 		'touchstart .exit':'lock',
 		'click .vat':'updateVat',
@@ -866,6 +873,11 @@ var EventView = Backbone.View.extend({
 	  			  app.views.mainview.setConsumptions(response.data.consumptions);
 	  			  app.selectedEvent=app.eventsCollection.get(ev);
 	  			  app.selectedEvent.set(response.data.event);
+	  			  app.views.trayview.items=[];
+	  			  app.views.trayview.price=0;
+	  			  app.views.trayview.bartab=0;
+	  			  app.views.trayview.saving=false;
+	  			  app.views.trayview.render()
 				    app.views.mainview.setTimer();
 	  			  app.views.mainview.unlock();
 	  			  app.routers.mainrouter.bar()
@@ -894,8 +906,14 @@ var EventView = Backbone.View.extend({
 	  			}
 	  		})			
 		}
-
-
+	},
+	finishEvent: function(e,t) {
+		 $(e.target).parent().parent().find('.closedBtns').removeClass('hide');
+		 $(e.target).parent().parent().find('.unclosedBtns').addClass('hide');
+	}, 
+	cancelFinish: function(e,t) {
+		$(e.target).parent().parent().find('.closedBtns').addClass('hide');
+		$(e.target).parent().parent().find('.unclosedBtns').removeClass('hide');
 	},
 	lock:function(){
 		app.trigger("lock",false)

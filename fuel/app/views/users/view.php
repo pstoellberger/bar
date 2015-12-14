@@ -6,7 +6,7 @@
 	<?php echo $user->pin; ?></p>
 <p>
 	<strong>Last login:</strong>
-	<?php echo date("d.m.Y h:i",$user->last_login); ?></p>
+	<?php echo date("d.m.Y H:i",$user->last_login); ?></p>
 <p>
 <?php echo Html::anchor('admin/users/edit/'.$user->id, 'Edit',array('class'=>'btn')); ?>
 
@@ -29,7 +29,7 @@ foreach($consumptions as $consumption){
 	$rows.="<tr>
 	<td>".$consumption->title."</td>
 	<td>".$consumption->price."€</td>
-	<td>".date("d.m.Y h:i",$consumption->created_at)."</td>
+	<td>".date("d.m.Y H:i",$consumption->created_at)."</td>
 	<td>".$consumption->order_id."</td> 
 	<td>".Html::anchor('admin/users/removeconsumption/'.$user->id."/".$consumption->id, 'Remove')."</td>
 	<td>".Html::anchor('admin/users/payconsumption/'.$user->id."/".$consumption->id, 'Mark paid')."</td>

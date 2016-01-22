@@ -5,11 +5,11 @@
 
 <?php echo Html::anchor('admin/users/exportconsumptions', 'Consumptions Export',array('class'=>'btn primary')); ?>
 
-<?php echo Html::anchor('admin/users/exportunpaid', 'Unpaid Export',array('class'=>'btn primary')); ?>
-
 <?php echo Html::anchor('admin/users/export', 'Mail Export',array('class'=>'btn primary')); ?>
 
-<?php echo Html::anchor('admin/users/markinactive', 'Mark Inactive',array('class'=>'btn primary')); ?>
+<?php echo Html::anchor('admin/users/exportunpaid', 'Unpaid Export',array('class'=>'btn primary')); ?>
+
+<?php echo Html::anchor('admin/users/markinactive', 'Mark Inactive',array('class'=>'btn danger')); ?>
 
 </h2>
 <h1>Team</h1>

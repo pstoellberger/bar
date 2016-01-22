@@ -58,6 +58,31 @@ class Controller_Admin_Users extends Controller_Admin {
 
 	}
 
+	public function action_exportunpaid(){
+		header("Content-type: text/html");
+		header('Content-disposition: attachment; filename=unpaid.csv');
+
+		$query=DB::query('select u.is_team, firstname,lastname, saldo, i.title, count(i.title), round(sum(c.price),2) as total  from users u, consumptions c, items i  where u.id = c.user_id and c.item_id = i.id and saldo > 0 and c.status = 1 group by 1,2,3,4,5');
+		$rows=$query->execute()->as_array();
+		
+		echo "is_team;firstname;lastname;unpaid_saldo;item;item_count;item_total\n";
+		foreach ($rows as $row):
+			echo str_replace(".", ",", utf8_decode(implode(";", $row)))."\n";
+		endforeach;
+
+		exit();
+
+	}
+
+	public function action_markinactive(){
+
+		$query=DB::query('update users set status = 1 where from_unixtime(last_login) < DATE_SUB(NOW(), INTERVAL 3 month) order by last_login;');
+		$rows=$query->execute();
+
+		Response::redirect('admin/users');
+
+	}
+
 
 	public function action_view($id = null)
 	{

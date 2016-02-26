@@ -39,14 +39,20 @@
 		echo Form::select('status',$status, array('active','disabled'));
 	 ?>
 	</p>
+	<p>
+		<?php echo Form::label('Custom Code', 'custom_code'); ?>: 
+		<?php echo Form::input('custom_code', Input::post('custom_code', isset($item) ? $item->custom_code : '')); ?>
+	</p>
 
 	<div class="well">
 	<?php echo Form::submit('save','Save',array('class'=>'btn primary')); ?>	
 	<?php echo Html::anchor('admin/items', 'Back',array('class'=>'btn')); ?>
+<!--
 	<?php if(isset($item)){
 		echo Html::anchor('admin/items/delete/'.$item->id, 'delete', array('class'=>'danger btn pull-right item-delete-btn','onclick' => "return confirm('Are you sure?')")); 
 	
 	} ?>
+-->
 	
 	</div>
 

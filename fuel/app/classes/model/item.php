@@ -47,6 +47,16 @@ class Model_Item extends Orm\Model {
             'label' => 'Status',
             'default' =>''
         ),
+        'custom_code' => array(
+            'type' =>'varchar',
+            'label' => 'Custom Code',
+            'default' =>''
+        ),
+        'custom_category' => array(
+            'type' =>'varchar',
+            'label' => 'Custom Category',
+            'default' =>'ipad'
+        ),
 
         'created_at' => array('type' => 'int', 'label' => 'Created At'),
         'updated_at' => array('type' => 'int', 'label' => 'Updated At')

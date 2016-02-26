@@ -36,7 +36,8 @@ class Controller_Admin_Items extends Controller_Admin {
 				'packing_unit' => Input::post('packing_unit'),
 				'points' => 0,
 				'category_id'=>Input::post('category_id'),
-				'status'=>Input::post('status')
+				'status'=>Input::post('status'),
+				'custom_code'=>Input::post('custom_code')
 			));
 
 			try{
@@ -69,6 +70,7 @@ class Controller_Admin_Items extends Controller_Admin {
 			$item->category_id=Input::post('category_id');
 			$item->status=Input::post('status');
 			$item->packing_unit=Input::post('packing_unit');
+			$item->custom_code=Input::post('custom_code');
 
 			try{
 				$item->save();

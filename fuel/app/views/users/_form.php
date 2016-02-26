@@ -30,6 +30,11 @@
 		echo Form::select('status',$status, array('active','disabled'));
 	 ?>
 	</p>
+	<p>
+		<?php echo Form::label('Custom Code', 'custom_code'); ?>: 
+		<?php echo Form::input('custom_code', Input::post('custom_code', isset($user) ? $user->custom_code : '')); ?>
+	</p>
+
 		<p>
 		<?php echo Form::label('Team?', 'is_team'); ?>: 
                 <?php

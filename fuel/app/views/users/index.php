@@ -17,6 +17,7 @@
 	<tr>
 		<th>Username</th>
 		<th>Email</th>
+		<th>Code</th>
 		<th>Last login</th>
 		<th>Unpaid</th>
 		<th>Item Count</th>
@@ -29,6 +30,7 @@
 		<?php $total+=$user->saldo; ?>
 		<td><?php echo $user->username; ?></td>
 		<td><?php echo $user->email; ?></td>
+		<td><?php echo $user->custom_code; ?></td>
 		<td><?php 
 			if($user->last_login>0){
 			 echo date("d.m.Y H:i",$user->last_login);
@@ -65,6 +67,7 @@
 	<tr>
 		<th>Username</th>
 		<th>Email</th>
+		<th>Code</th>
 		<th>Last login</th>
 		<th>Unpaid</th>
 		<th>Item Count</th>
@@ -77,6 +80,7 @@
 		<?php $total+=$user->saldo; ?>
 		<td><?php echo $user->username; ?></td>
 		<td><?php echo $user->email; ?></td>
+		<td><?php echo $user->custom_code; ?></td>
 		<td><?php 
 			if($user->last_login>0){
 			 echo date("d.m.Y H:i",$user->last_login);
@@ -113,6 +117,7 @@
 	<tr>
 		<th>Username</th>
 		<th>Email</th>
+		<th>Code</th>
 		<th>Last login</th>
 		<th>Unpaid</th>
 		<th>Item Count</th>
@@ -125,6 +130,7 @@
 		<?php $total+=$user->saldo; ?>
 		<td><?php echo $user->username; ?></td>
 		<td><?php echo $user->email; ?></td>
+		<td><?php echo $user->custom_code; ?></td>
 		<td><?php 
 			if($user->last_login>0){
 			 echo date("d.m.Y H:i",$user->last_login);

@@ -58,6 +58,11 @@ class Model_User extends Orm\Model {
             'label' => 'Is Team',
             'default' =>false
         ),
+        'custom_code' => array(
+            'type' =>'varchar',
+            'label' => 'Custom Code',
+            'default' =>''
+        ),
         'profile_fields' => array('type' => 'text', 'label' => 'Profile fields'),
         'last_login' => array('type' => 'int', 'label' => 'Last login'),
         'created_at' => array('type' => 'int', 'label' => 'Created At'),

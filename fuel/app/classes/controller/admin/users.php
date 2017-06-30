@@ -76,7 +76,7 @@ class Controller_Admin_Users extends Controller_Admin {
 
 	public function action_markinactive(){
 
-		$query=DB::query('update users set status = 1 where from_unixtime(last_login) < DATE_SUB(NOW(), INTERVAL 2 month) order by last_login;');
+		$query=DB::query('update users set status = 1 where from_unixtime(last_login) < DATE_SUB(NOW(), INTERVAL 6 month) order by last_login;');
 		$rows=$query->execute();
 
 		Response::redirect('admin/users');

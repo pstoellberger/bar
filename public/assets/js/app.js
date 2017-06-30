@@ -797,7 +797,13 @@ var EventView = Backbone.View.extend({
 		} else {
 			for (var i in app.googleEvents.items) {
 				var title = app.googleEvents.items[i].summary;
-				var d = app.googleEvents.items[i].start.dateTime;
+				var start = app.googleEvents.items[i].start;
+                                var d = '';
+                                if (start['date']) {
+                                        d = start.date;
+                                } else {
+                                        d = start.dateTime;
+                                }
 				var ds = d.substr(0,4) + "" + d.substr(5,2) + "" + d.substr(8,2);
 				var opt = "<option value='" + title + "' date='" + ds + "'>" + title + " | " + ds + "</option>";
 				$(opt).appendTo($(self.el).find('.googleEvents'));
